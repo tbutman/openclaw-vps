@@ -2,12 +2,9 @@
   "gateway": {
     "mode": "local",
     "port": 18789,
-    "bind": "lan",
+    "bind": "loopback",
     "controlUi": {
-      "enabled": true,
-      "dangerouslyAllowHostHeaderOriginFallback": true,
-      "dangerouslyDisableDeviceAuth": true,
-      "allowInsecureAuth": true
+      "enabled": true
     }
   },
 

@@ -96,7 +96,7 @@ docker compose restart openclaw
 sleep 3
 
 echo ""
-echo "[5/5] Verifying gateway health..."
+echo "[5/6] Verifying gateway health..."
 # Wait a few seconds for gateway to start
 sleep 5
 
@@ -109,8 +109,14 @@ else
   exit 1
 fi
 
-# Get Tailscale IP (if available)
-TAILSCALE_IP=$(tailscale ip -4 2>/dev/null || echo "<tailscale-ip>")
+echo ""
+echo "[6/6] Setting up Tailscale HTTPS proxy..."
+# Set up tailscale serve to provide HTTPS access to the gateway
+sudo tailscale serve --bg --https 443 http://127.0.0.1:18789
+
+# Get Tailscale hostname
+TAILSCALE_HOSTNAME=$(tailscale status --json 2>/dev/null | grep -o '"HostName":"[^"]*"' | cut -d'"' -f4 || echo "<tailscale-hostname>")
+TAILNET=$(tailscale status --json 2>/dev/null | grep -o '"MagicDNSSuffix":"[^"]*"' | cut -d'"' -f4 || echo "ts.net")
 
 echo ""
 echo "======================================"
@@ -119,8 +125,10 @@ echo "======================================"
 echo ""
 echo "OpenClaw gateway is running on port 18789."
 echo ""
-echo "Access the Control UI via Tailscale:"
-echo "  http://$TAILSCALE_IP:18789"
+echo "Access the Control UI via Tailscale (HTTPS):"
+echo "  https://${TAILSCALE_HOSTNAME}.${TAILNET}"
+echo ""
+echo "This provides a secure context for device authentication."
 echo ""
 echo "Next steps:"
 echo "1. Configure Slack connection:"

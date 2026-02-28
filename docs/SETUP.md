@@ -248,13 +248,16 @@ This script will:
 - Create OpenClaw directories
 - Build the Docker image
 - Start the OpenClaw gateway + Chromium containers
-- Copy the config template to `~/.openclaw/config.json`
+- Copy the config template to `~/.openclaw/openclaw.json`
 - Restart the gateway to apply configuration
+- **Set up Tailscale HTTPS proxy** (provides secure context for Control UI)
 - Verify health
 
 **This takes ~3-5 minutes** (Docker image build + npm installs).
 
 **Note:** The script automatically configures the gateway with the template from `config/openclaw.template.json`. You can customize this later by editing `~/.openclaw/openclaw.json`.
+
+**Tailscale HTTPS Proxy:** The script runs `tailscale serve` to provide HTTPS access to the Control UI. This is required because the browser's Web Crypto API (used for device authentication) needs a secure context (HTTPS or localhost). Tailscale automatically provisions a TLS certificate for your tailnet hostname.
 
 ### Step 5: Verify Installation
 
@@ -275,6 +278,26 @@ docker compose -f docker/docker-compose.yml logs -f openclaw
 ```
 
 Press `Ctrl+C` to exit logs.
+
+### Step 6: Access Control UI (Optional)
+
+Get your Tailscale hostname:
+
+```bash
+tailscale status
+```
+
+Look for your VPS hostname (e.g., `openclaw-vps`). Then access the Control UI in your browser:
+
+```
+https://openclaw-vps.<your-tailnet>.ts.net
+```
+
+Replace `<your-tailnet>` with your actual Tailnet name (shown in Tailscale admin console).
+
+**Why HTTPS is required:** The Control UI uses the browser's Web Crypto API for device authentication, which requires a secure context (HTTPS or localhost). Tailscale automatically provisions a TLS certificate for your tailnet hostname.
+
+**Security note:** The gateway binds to `localhost` only. Tailscale Serve proxies HTTPS traffic from your tailnet to `localhost:18789`, keeping the gateway unexposed to the public internet.
 
 ---
 
