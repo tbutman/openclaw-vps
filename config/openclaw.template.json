@@ -4,7 +4,8 @@
     "port": 18789,
     "bind": "lan",
     "controlUi": {
-      "enabled": true
+      "enabled": true,
+      "dangerouslyAllowHostHeaderOriginFallback": true
     }
   },
 
