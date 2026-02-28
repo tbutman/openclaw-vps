@@ -56,5 +56,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:18789/health || exit 1
 
 # Default command
-# Run gateway in foreground (not as systemd service)
-CMD ["openclaw", "gateway", "run"]
+# Run gateway in foreground
+CMD ["openclaw", "gateway"]
