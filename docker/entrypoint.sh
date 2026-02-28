@@ -23,4 +23,4 @@ tailscale status || true
 
 # Drop to openclaw user and run gateway
 echo "Starting OpenClaw gateway as openclaw user..."
-exec su-exec openclaw "$@"
+exec gosu openclaw "$@"
