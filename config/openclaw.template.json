@@ -8,7 +8,10 @@
       "mode": "serve"
     },
     "auth": {
-      "mode": "none",
+      "mode": "trusted-proxy",
+      "trustedProxy": {
+        "userHeader": "tailscale-user-login"
+      },
       "allowTailscale": true
     },
     "controlUi": {
