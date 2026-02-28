@@ -18,6 +18,10 @@ Before you begin, ensure you have:
 ### Local Machine
 - [ ] **SSH key pair** — Generate with `ssh-keygen -t ed25519` if needed
 - [ ] **Tailscale installed** — On your laptop/phone for VPN access
+  - **macOS:** `brew install --cask tailscale` or download from [tailscale.com/download/mac](https://tailscale.com/download/mac)
+  - **Windows:** Download from [tailscale.com/download/windows](https://tailscale.com/download/windows)
+  - **Linux:** `curl -fsSL https://tailscale.com/install.sh | sh`
+  - After installing, launch Tailscale and sign in with your Tailscale account
 - [ ] **Slack installed** — On your laptop/phone for testing
 - [ ] **Git installed** — For cloning repositories
 
