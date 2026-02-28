@@ -3,6 +3,7 @@
     "mode": "local",
     "port": 18789,
     "bind": "loopback",
+    "trustedProxies": ["127.0.0.1", "::1"],
     "tailscale": {
       "mode": "serve"
     },
@@ -11,8 +12,7 @@
     },
     "controlUi": {
       "enabled": true,
-      "trustedProxies": ["127.0.0.1", "::1"],
-      "allowedOrigins": ["https://*.ts.net"]
+      "allowedOrigins": ["https://openclaw-gateway.tailb1b4fb.ts.net"]
     }
   },
   "channels": {
