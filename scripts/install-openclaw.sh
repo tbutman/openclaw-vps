@@ -86,7 +86,17 @@ echo "Docker containers started."
 docker compose ps
 
 echo ""
-echo "[4/4] Verifying gateway health..."
+echo "[4/5] Configuring OpenClaw gateway..."
+# Copy config template to OpenClaw state directory
+cp ../config/openclaw-config.template.json "$OPENCLAW_STATE_DIR/config.json"
+echo "Config template copied to $OPENCLAW_STATE_DIR/config.json"
+
+# Restart containers to pick up config
+docker compose restart openclaw
+sleep 3
+
+echo ""
+echo "[5/5] Verifying gateway health..."
 # Wait a few seconds for gateway to start
 sleep 5
 

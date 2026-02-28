@@ -244,9 +244,13 @@ This script will:
 - Create OpenClaw directories
 - Build the Docker image
 - Start the OpenClaw gateway + Chromium containers
+- Copy the config template to `~/.openclaw/config.json`
+- Restart the gateway to apply configuration
 - Verify health
 
 **This takes ~3-5 minutes** (Docker image build + npm installs).
+
+**Note:** The script automatically configures the gateway with the template from `config/openclaw-config.template.json`. You can customize this later by editing `~/.openclaw/config.json`.
 
 ### Step 5: Verify Installation
 
