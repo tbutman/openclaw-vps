@@ -32,8 +32,8 @@ RUN node --version && npm --version
 # For now, this is a placeholder
 RUN npm install -g openclaw || echo "OpenClaw installation placeholder"
 
-# Create non-root user
-RUN useradd -m -s /bin/bash openclaw -u 1000
+# Create non-root user (or use existing user if UID 1000 already exists)
+RUN id -u openclaw &>/dev/null || useradd -m -s /bin/bash openclaw
 
 # Create OpenClaw directories
 RUN mkdir -p /home/openclaw/.openclaw /home/openclaw/workspace \
