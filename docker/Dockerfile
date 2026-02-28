@@ -56,5 +56,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:18789/health || exit 1
 
 # Default command
-# This will be overridden by docker-compose.yml
-CMD ["openclaw", "gateway", "start"]
+# Run gateway in foreground (not as systemd service)
+CMD ["openclaw", "gateway", "run"]
