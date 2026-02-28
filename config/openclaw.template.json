@@ -5,7 +5,8 @@
     "bind": "lan",
     "controlUi": {
       "enabled": true,
-      "dangerouslyAllowHostHeaderOriginFallback": true
+      "dangerouslyAllowHostHeaderOriginFallback": true,
+      "dangerouslyDisableDeviceAuth": true
     }
   },
 
