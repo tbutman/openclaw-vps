@@ -40,7 +40,7 @@
   "browser": {
     "enabled": true,
     "headless": true,
-    "cdpUrl": "ws://chromium:3000"
+    "cdpUrl": "http://chromium:3000"
   },
 
   "tools": {
