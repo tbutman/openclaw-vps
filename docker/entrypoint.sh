@@ -12,7 +12,7 @@ sleep 2
 # Authenticate with Tailscale if not already authenticated
 if [ -n "$TAILSCALE_AUTHKEY" ]; then
   echo "Authenticating with Tailscale..."
-  tailscale up --authkey="$TAILSCALE_AUTHKEY" --hostname="${TAILSCALE_HOSTNAME:-openclaw-gateway}" || true
+  tailscale up --authkey="$TAILSCALE_AUTHKEY" --hostname="${TAILSCALE_HOSTNAME:-openclaw-gateway}" --operator=openclaw || true
   echo "Tailscale authenticated"
 else
   echo "WARNING: TAILSCALE_AUTHKEY not set, skipping Tailscale authentication"
