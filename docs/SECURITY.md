@@ -8,13 +8,14 @@ This document covers security hardening, best practices, and the security model 
 
 The OpenClaw VPS is designed with a **zero-trust, defense-in-depth** approach:
 
-1. **No public services exposed** — OpenClaw gateway only accessible via Tailscale
-2. **Key-based SSH only** — Password authentication disabled
-3. **Firewall locked down** — UFW denies all inbound except Tailscale + SSH
-4. **fail2ban active** — Auto-bans brute-force SSH attempts
-5. **Docker containers run as non-root** — UID 1000
-6. **Consent mode enabled** — All OpenClaw commands require approval
-7. **Automatic security updates** — Unattended upgrades enabled
+1. **No public services exposed** — OpenClaw gateway only accessible via Tailscale Serve (HTTPS)
+2. **Tailscale identity authentication** — Control UI uses Tailscale identity headers (no device pairing)
+3. **Key-based SSH only** — Password authentication disabled
+4. **Firewall locked down** — UFW denies all inbound except SSH
+5. **fail2ban active** — Auto-bans brute-force SSH attempts
+6. **Docker containers run as non-root** — UID 1000 (openclaw user)
+7. **Consent mode enabled** — All OpenClaw commands require approval
+8. **Automatic security updates** — Unattended upgrades enabled
 
 ---
 
@@ -103,17 +104,15 @@ New profiles: skip
 To                         Action      From
 --                         ------      ----
 22/tcp                     LIMIT       Anywhere
-Anywhere on tailscale0     ALLOW       Anywhere
 ```
 
 ### What Each Rule Does
 
 - **22/tcp LIMIT** — Allow SSH but rate-limit to prevent brute-force
-- **Anywhere on tailscale0 ALLOW** — Allow all traffic from Tailscale VPN
 
-**No other ports are exposed.** The OpenClaw gateway (port 18789) is only accessible via Tailscale.
+**No other ports are exposed.** The OpenClaw gateway runs inside Docker and is only accessible via Tailscale Serve (HTTPS).
 
-### Verify OpenClaw Port is NOT Publicly Accessible
+### Verify OpenClaw is NOT Publicly Accessible
 
 From your **local machine** (not the VPS), try:
 
@@ -123,13 +122,13 @@ curl http://<vps-public-ip>:18789
 
 Expected result: **Connection refused or timeout.** This is correct.
 
-Now try via Tailscale:
+Now try via Tailscale Serve (HTTPS):
 
 ```bash
-curl http://<tailscale-ip>:18789/health
+curl https://openclaw-gateway.<your-tailnet>.ts.net
 ```
 
-Expected result: **200 OK** or health check response.
+Expected result: **200 OK** or Control UI HTML (if connected to Tailscale).
 
 ---
 
@@ -190,22 +189,25 @@ sudo fail2ban-client set sshd unbanip <your-ip>
 
 ### Why Tailscale?
 
-Tailscale provides a **zero-config VPN** that:
-- Encrypts all traffic between your devices and the VPS
-- Authenticates via your Tailscale account (no open ports needed)
-- Prevents public access to the OpenClaw Control UI
+Tailscale provides secure access to the OpenClaw Control UI:
+- **Tailscale Serve** provides HTTPS with auto-provisioned TLS certificates
+- **Identity-based authentication** uses Tailscale user headers (no device pairing)
+- **Access control** via Tailscale ACLs (restrict who can access the gateway)
+- **No public exposure** — Control UI only accessible to Tailscale network members
 
 ### Verify Tailscale is Running
 
+Tailscale runs inside the OpenClaw Docker container. Check status:
+
 ```bash
-tailscale status
+docker compose -f docker/docker-compose.yml exec openclaw tailscale status
 ```
 
 Expected output:
 
 ```
-<vps-hostname>       openclaw@    linux   -
-100.x.y.z           <your-laptop> macOS   active
+openclaw-gateway     tagged-devices@  linux   idle; offers exit node
+100.x.y.z           <your-laptop>    macOS   active
 ```
 
 ### Access Control
@@ -453,7 +455,7 @@ Use a free uptime monitor like:
 Monitor the OpenClaw health endpoint:
 
 ```
-http://<tailscale-ip>:18789/health
+https://openclaw-gateway.<your-tailnet>.ts.net
 ```
 
 ---
@@ -494,8 +496,8 @@ Use this checklist to verify your deployment is secure:
 - [ ] Root login via SSH disabled
 - [ ] UFW firewall active and configured
 - [ ] fail2ban active and monitoring SSH
-- [ ] Tailscale connected and authenticated
-- [ ] OpenClaw Control UI only accessible via Tailscale
+- [ ] Tailscale connected inside Docker container
+- [ ] OpenClaw Control UI only accessible via Tailscale Serve (HTTPS)
 - [ ] `.env` file has permissions `600`
 - [ ] `.openclaw/` directory has permissions `700`
 - [ ] Docker containers run as non-root (UID 1000)

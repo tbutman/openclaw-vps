@@ -6,14 +6,13 @@ services:
       dockerfile: Dockerfile
     container_name: openclaw-gateway
     restart: unless-stopped
-    ports:
-      # Gateway WebSocket port (localhost only, exposed via tailscale serve)
-      - "127.0.0.1:18789:18789"
     volumes:
       # OpenClaw state directory (config, credentials, memory, conversations)
       - ${OPENCLAW_STATE_DIR:-/home/openclaw/.openclaw}:/home/openclaw/.openclaw
       # Agent workspace directory
       - ${OPENCLAW_WORKSPACE_DIR:-/home/openclaw/workspace}:/home/openclaw/workspace
+      # Tailscale state directory (for persistence across restarts)
+      - tailscale-state:/var/lib/tailscale
     environment:
       # LLM Provider
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
@@ -21,6 +20,10 @@ services:
       # Slack credentials
       - SLACK_APP_TOKEN=${SLACK_APP_TOKEN}
       - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+
+      # Tailscale credentials
+      - TAILSCALE_AUTHKEY=${TAILSCALE_AUTHKEY}
+      - TAILSCALE_HOSTNAME=openclaw-gateway
 
       # Node environment
       - NODE_ENV=production
@@ -60,3 +63,6 @@ services:
 networks:
   openclaw-network:
     driver: bridge
+
+volumes:
+  tailscale-state:

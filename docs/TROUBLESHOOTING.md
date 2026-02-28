@@ -186,31 +186,28 @@ If this happens frequently, adjust the rate limit in `~/.openclaw/config.json`:
 
 ## Tailscale Issues
 
-### Issue: Cannot access Control UI via Tailscale IP
+### Issue: Cannot access Control UI via Tailscale Serve
 
 **Possible causes:**
 
-1. **Tailscale not running on VPS**
+1. **Tailscale not running inside container**
    ```bash
-   tailscale status
+   docker compose -f ~/openclaw-vps/docker/docker-compose.yml exec openclaw tailscale status
    ```
-   If offline:
+   If error or offline, check container logs:
    ```bash
-   sudo tailscale up
+   docker compose -f ~/openclaw-vps/docker/docker-compose.yml logs openclaw | grep -i tailscale
    ```
 
 2. **Tailscale not running on your laptop**
-   - Open Tailscale app and ensure it's connected
+   - Open Tailscale app and ensure it's connected to the same tailnet
 
-3. **UFW blocking Tailscale traffic**
+3. **Tailscale Serve not enabled for your tailnet**
+   - Check container logs for a URL to enable Serve
+   - Visit the URL and enable Serve
+   - Restart the container:
    ```bash
-   sudo ufw status
-   ```
-   Should show: `Anywhere on tailscale0 ALLOW Anywhere`
-
-   If missing:
-   ```bash
-   sudo ufw allow in on tailscale0
+   docker compose -f ~/openclaw-vps/docker/docker-compose.yml restart openclaw
    ```
 
 4. **OpenClaw container not running**
@@ -222,25 +219,25 @@ If this happens frequently, adjust the rate limit in `~/.openclaw/config.json`:
    docker compose -f ~/openclaw-vps/docker/docker-compose.yml up -d
    ```
 
+5. **Wrong Tailscale URL**
+   - Get the correct URL from container:
+   ```bash
+   docker compose -f ~/openclaw-vps/docker/docker-compose.yml exec openclaw tailscale status --json | grep -o '"HostName":"[^"]*"'
+   ```
+   - Access via: `https://<hostname>.<tailnet>.ts.net`
+
 ---
 
-### Issue: Tailscale IP changed
+### Issue: Tailscale Serve "Connection refused"
 
-**Cause:** Tailscale sometimes reassigns IPs if the VPS restarts.
+**Cause:** OpenClaw may not have finished starting when Tailscale Serve was configured.
 
 **Solution:**
 
-1. Get the new Tailscale IP:
-   ```bash
-   tailscale ip -4
-   ```
-
-2. Use the new IP to access the Control UI.
-
-**Alternative:** Use the hostname instead of IP:
+Restart the container to re-trigger Tailscale Serve setup:
 
 ```bash
-tailscale status
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml restart openclaw
 ```
 
 Look for the VPS hostname (e.g., `openclaw-vps`), then access:

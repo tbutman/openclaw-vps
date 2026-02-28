@@ -29,7 +29,7 @@ Before you begin, ensure you have:
 - [ ] Anthropic API key (`sk-ant-...`)
 - [ ] Slack App-Level Token (`xapp-...`) — See Phase 0 below
 - [ ] Slack Bot Token (`xoxb-...`) — See Phase 0 below
-- [ ] Tailscale auth key (`tskey-auth-...`) — Generate a reusable key
+- [ ] Tailscale auth key (`tskey-auth-...`) — Generate a reusable key from [login.tailscale.com/admin/settings/keys](https://login.tailscale.com/admin/settings/keys)
 
 ---
 
@@ -146,7 +146,6 @@ This script will:
 - Create the `openclaw` user
 - Harden SSH (key-only, no root login)
 - Install Docker + Docker Compose
-- Install Tailscale
 - Configure UFW firewall
 - Install fail2ban
 - Enable unattended-upgrades
@@ -160,25 +159,6 @@ This script will:
 Automatically download and install stable updates?
 ```
 Select **Yes** to enable automatic security updates.
-
-### Step 5: Authenticate Tailscale
-
-After bootstrap completes:
-
-```bash
-sudo tailscale up --authkey=<your-tailscale-auth-key>
-```
-
-Get your auth key from [login.tailscale.com/admin/settings/keys](https://login.tailscale.com/admin/settings/keys).
-
-Check that Tailscale is connected:
-
-```bash
-tailscale status
-tailscale ip -4
-```
-
-Note the Tailscale IP (e.g., `100.x.y.z`). You'll use this to access the Control UI.
 
 ---
 
@@ -223,7 +203,7 @@ Fill in:
 ANTHROPIC_API_KEY=sk-ant-...
 SLACK_APP_TOKEN=xapp-...
 SLACK_BOT_TOKEN=xoxb-...
-TAILSCALE_AUTHKEY=tskey-auth-...  # Optional if already authenticated
+TAILSCALE_AUTHKEY=tskey-auth-...
 OPENCLAW_USER=openclaw
 OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
 OPENCLAW_WORKSPACE_DIR=/home/openclaw/workspace
@@ -246,18 +226,22 @@ bash scripts/install-openclaw.sh
 This script will:
 - Validate `.env` file
 - Create OpenClaw directories
-- Build the Docker image
+- Build the Docker image (includes Tailscale CLI)
 - Start the OpenClaw gateway + Chromium containers
 - Copy the config template to `~/.openclaw/openclaw.json`
 - Restart the gateway to apply configuration
-- **Set up Tailscale HTTPS proxy** (provides secure context for Control UI)
 - Verify health
 
 **This takes ~3-5 minutes** (Docker image build + npm installs).
 
 **Note:** The script automatically configures the gateway with the template from `config/openclaw.template.json`. You can customize this later by editing `~/.openclaw/openclaw.json`.
 
-**Tailscale HTTPS Proxy:** The script runs `tailscale serve` to provide HTTPS access to the Control UI. This is required because the browser's Web Crypto API (used for device authentication) needs a secure context (HTTPS or localhost). Tailscale automatically provisions a TLS certificate for your tailnet hostname.
+**Tailscale Integration:** The Docker container runs Tailscale daemon internally and uses OpenClaw's built-in Tailscale Serve support. When the container starts, it:
+1. Starts Tailscale daemon in userspace-networking mode
+2. Authenticates with your Tailscale auth key
+3. OpenClaw automatically configures `tailscale serve` to provide HTTPS access to the Control UI
+4. Tailscale provisions a TLS certificate for your tailnet hostname
+5. Requests from your Tailscale network are authenticated via Tailscale identity headers - **no device pairing required**!
 
 ### Step 5: Verify Installation
 
@@ -279,27 +263,26 @@ docker compose -f docker/docker-compose.yml logs -f openclaw
 
 Press `Ctrl+C` to exit logs.
 
-### Step 6: Access Control UI (Optional)
+### Step 6: Access Control UI
 
-Get your Tailscale hostname:
+The installation script will display your Tailscale URL at the end. It looks like:
+
+```
+https://openclaw-gateway.<your-tailnet>.ts.net
+```
+
+Open this URL in your browser (make sure you're connected to Tailscale on your local device).
+
+**Security:** The gateway binds to `localhost` inside the container. Tailscale Serve (managed by OpenClaw) proxies HTTPS traffic from your tailnet, providing:
+- Automatic TLS certificates
+- Tailscale identity-based authentication (no device pairing needed)
+- Access restricted to your Tailscale network only
+
+**First-time setup:** If you haven't used Tailscale Serve before, you'll need to enable it for your tailnet. OpenClaw will provide a URL in the logs - visit it and click to enable. Then restart the container:
 
 ```bash
-tailscale status
+docker compose -f docker/docker-compose.yml restart openclaw
 ```
-
-Look for your VPS hostname (e.g., `openclaw-vps`). Then access the Control UI in your browser:
-
-```
-https://openclaw-vps.<your-tailnet>.ts.net
-```
-
-Replace `<your-tailnet>` with your actual Tailnet name (shown in Tailscale admin console).
-
-**Why HTTPS is required:** The Control UI uses the browser's Web Crypto API for device authentication, which requires a secure context (HTTPS or localhost). Tailscale automatically provisions a TLS certificate for your tailnet hostname.
-
-**Security note:** The gateway binds to `localhost` only. Tailscale Serve proxies HTTPS traffic from your tailnet to `localhost:18789`, keeping the gateway unexposed to the public internet.
-
-**First-time setup:** If you haven't used Tailscale Serve before, you'll need to enable it for your tailnet. The command will provide a URL - visit it and click to enable, then re-run the command.
 
 ---
 
@@ -326,7 +309,7 @@ The bot will respond with a **pairing code** (e.g., `ABC123`).
 Open the OpenClaw Control UI in your browser (via Tailscale):
 
 ```
-http://<tailscale-ip>:18789
+https://openclaw-gateway.<your-tailnet>.ts.net
 ```
 
 Or approve via CLI:
@@ -395,8 +378,7 @@ See [ADDING-AGENTS.md](ADDING-AGENTS.md) for more details.
 
 - [ ] Phase 0: Slack App created and tokens saved
 - [ ] Phase 1: VPS provisioned and bootstrapped
-- [ ] Phase 1: Tailscale authenticated
-- [ ] Phase 2: OpenClaw installed and running
+- [ ] Phase 2: OpenClaw installed and running (with Tailscale)
 - [ ] Phase 3: Slack pairing successful
 - [ ] Phase 3: Test conversation working
 - [ ] Phase 4: Agent deployed (if applicable)

@@ -10,17 +10,22 @@ FROM ubuntu:24.04
 # Avoid interactive prompts during build
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Node.js 22 and essential tools
+# Install Node.js 22, Tailscale, and essential tools
 RUN apt-get update && apt-get install -y \
     curl \
     git \
     ca-certificates \
     gnupg \
+    iptables \
+    iproute2 \
+    su-exec \
     && mkdir -p /etc/apt/keyrings \
     && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
     && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/noble.noarmor.gpg | tee /usr/share/keyrings/tailscale-archive-keyring.gpg >/dev/null \
+    && echo "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu noble main" | tee /etc/apt/sources.list.d/tailscale.list \
     && apt-get update \
-    && apt-get install -y nodejs \
+    && apt-get install -y nodejs tailscale \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -42,8 +47,15 @@ RUN if id 1000 2>/dev/null; then \
 RUN mkdir -p /home/openclaw/.openclaw /home/openclaw/workspace \
     && chown -R openclaw:openclaw /home/openclaw
 
-# Switch to non-root user
-USER openclaw
+# Create Tailscale state directory
+RUN mkdir -p /var/lib/tailscale /var/run/tailscale \
+    && chmod 755 /var/lib/tailscale /var/run/tailscale
+
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set working directory
 WORKDIR /home/openclaw
 
 # Expose OpenClaw gateway port (WebSocket)
@@ -53,6 +65,8 @@ EXPOSE 18789
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:18789/health || exit 1
 
-# Default command
-# Run gateway in foreground
+# Entrypoint starts Tailscale daemon and drops to openclaw user
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
+# Default command (passed to entrypoint, runs as openclaw user)
 CMD ["openclaw", "gateway", "run"]

@@ -11,12 +11,13 @@ set -euo pipefail
 #   - Creates a non-root user (openclaw)
 #   - Configures SSH (key-only, no root login)
 #   - Installs Docker + Docker Compose
-#   - Installs & configures Tailscale
 #   - Configures UFW firewall
 #   - Installs & configures fail2ban
 #   - Enables unattended-upgrades
 #   - Creates swap file
 #   - Creates OpenClaw directories
+#
+# Note: Tailscale runs inside the Docker container, not on the host
 #
 # Usage:
 #   bash scripts/bootstrap-vps.sh
@@ -106,10 +107,8 @@ docker --version
 docker compose version
 
 echo ""
-echo "[5/10] Installing Tailscale..."
-curl -fsSL https://tailscale.com/install.sh | sh
-echo "Tailscale installed. You will need to authenticate it after bootstrap completes."
-echo "Run: sudo tailscale up --authkey=<your-auth-key>"
+echo "[5/10] Skipping Tailscale installation..."
+echo "Tailscale will run inside the OpenClaw Docker container."
 
 echo ""
 echo "[6/10] Configuring UFW firewall..."
@@ -124,8 +123,7 @@ ufw default allow outgoing
 # Allow SSH (rate-limited)
 ufw limit 22/tcp comment 'SSH rate-limited'
 
-# Allow Tailscale (interface will be tailscale0 after authentication)
-ufw allow in on tailscale0 comment 'Tailscale VPN'
+# Note: Tailscale runs inside Docker container, no host firewall rule needed
 
 # Enable UFW
 ufw --force enable
@@ -188,22 +186,19 @@ echo "Bootstrap Complete!"
 echo "======================================"
 echo ""
 echo "Next steps:"
-echo "1. Authenticate Tailscale:"
-echo "   sudo tailscale up --authkey=<your-tailscale-auth-key>"
-echo ""
-echo "2. Exit and SSH back in as the openclaw user:"
+echo "1. Exit and SSH back in as the openclaw user:"
 echo "   ssh $OPENCLAW_USER@<vps-ip>"
 echo ""
-echo "3. Clone this repo to the openclaw user's home directory:"
+echo "2. Clone this repo to the openclaw user's home directory:"
 echo "   git clone https://github.com/<your-username>/openclaw-vps.git"
 echo "   cd openclaw-vps"
 echo ""
-echo "4. Configure credentials:"
+echo "3. Configure credentials:"
 echo "   cp .env.example .env"
-echo "   nano .env  # Fill in your API keys and tokens"
+echo "   nano .env  # Fill in your API keys and tokens (including TAILSCALE_AUTHKEY)"
 echo "   chmod 600 .env"
 echo ""
-echo "5. Install OpenClaw:"
+echo "4. Install OpenClaw:"
 echo "   bash scripts/install-openclaw.sh"
 echo ""
 echo "======================================"

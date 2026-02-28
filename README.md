@@ -22,14 +22,14 @@ This repository provides everything you need to provision a secure, agent-agnost
 ### Infrastructure
 - **Hetzner CX22 VPS** — 2 vCPU, 4GB RAM, Ubuntu 24.04
 - **Docker + Docker Compose** — Container runtime for OpenClaw gateway
-- **Tailscale VPN** — Private mesh network for secure admin access
 - **UFW Firewall** — No public ports exposed except SSH
 - **fail2ban** — SSH brute-force protection
 - **Automatic security updates** — Unattended upgrades enabled
 
 ### OpenClaw Gateway
-- Runs via Docker with Node.js 22
-- WebSocket gateway on `ws://127.0.0.1:18789` (Tailscale only)
+- Runs via Docker with Node.js 22 + Tailscale CLI
+- Control UI accessible via Tailscale Serve (HTTPS with auto-TLS)
+- Tailscale identity authentication (no device pairing required)
 - Slack integration via Socket Mode (no webhooks needed)
 - Chromium container for browser automation
 - Consent mode enabled — all commands require approval

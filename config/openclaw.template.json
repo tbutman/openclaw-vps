@@ -2,10 +2,15 @@
   "gateway": {
     "mode": "local",
     "port": 18789,
-    "bind": "lan",
+    "bind": "loopback",
+    "tailscale": {
+      "mode": "serve"
+    },
+    "auth": {
+      "allowTailscale": true
+    },
     "controlUi": {
-      "enabled": true,
-      "allowedOrigins": ["http://localhost:18789", "https://openclaw-vps.tailb1b4fb.ts.net"\]
+      "enabled": true
     }
   },
   "channels": {
@@ -14,7 +19,6 @@
     },
     "slack": {
       "enabled": true,
-      "mode": "socket",
       "dmPolicy": "pairing"
     }
   },

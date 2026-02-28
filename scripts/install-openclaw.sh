@@ -86,7 +86,7 @@ echo "Docker containers started."
 docker compose ps
 
 echo ""
-echo "[4/5] Configuring OpenClaw gateway..."
+echo "[4/4] Configuring OpenClaw gateway..."
 # Copy config template to OpenClaw state directory
 cp ../config/openclaw.template.json "$OPENCLAW_STATE_DIR/openclaw.json"
 echo "Config template copied to $OPENCLAW_STATE_DIR/openclaw.json"
@@ -96,9 +96,9 @@ docker compose restart openclaw
 sleep 3
 
 echo ""
-echo "[5/6] Verifying gateway health..."
-# Wait a few seconds for gateway to start
-sleep 5
+echo "Verifying gateway health..."
+# Wait for gateway and Tailscale to start
+sleep 10
 
 # Check if containers are running
 if docker compose ps | grep -q "Up"; then
@@ -109,26 +109,23 @@ else
   exit 1
 fi
 
+# Get Tailscale hostname from inside container
 echo ""
-echo "[6/6] Setting up Tailscale HTTPS proxy..."
-# Set up tailscale serve to provide HTTPS access to the gateway
-sudo tailscale serve --bg --https 443 http://127.0.0.1:18789
-
-# Get Tailscale hostname
-TAILSCALE_HOSTNAME=$(tailscale status --json 2>/dev/null | grep -o '"HostName":"[^"]*"' | cut -d'"' -f4 || echo "<tailscale-hostname>")
-TAILNET=$(tailscale status --json 2>/dev/null | grep -o '"MagicDNSSuffix":"[^"]*"' | cut -d'"' -f4 || echo "ts.net")
+echo "Retrieving Tailscale connection info..."
+TAILSCALE_HOSTNAME=$(docker compose exec -T openclaw tailscale status --json 2>/dev/null | grep -o '"HostName":"[^"]*"' | cut -d'"' -f4 || echo "openclaw-gateway")
+TAILNET=$(docker compose exec -T openclaw tailscale status --json 2>/dev/null | grep -o '"MagicDNSSuffix":"[^"]*"' | cut -d'"' -f4 || echo "ts.net")
 
 echo ""
 echo "======================================"
 echo "Installation Complete!"
 echo "======================================"
 echo ""
-echo "OpenClaw gateway is running on port 18789."
+echo "OpenClaw gateway is running with Tailscale Serve."
 echo ""
 echo "Access the Control UI via Tailscale (HTTPS):"
 echo "  https://${TAILSCALE_HOSTNAME}.${TAILNET}"
 echo ""
-echo "This provides a secure context for device authentication."
+echo "Tailscale identity authentication is enabled - no device pairing required!"
 echo ""
 echo "Next steps:"
 echo "1. Configure Slack connection:"
@@ -136,13 +133,13 @@ echo "   bash scripts/configure-slack.sh"
 echo ""
 echo "2. Send a test DM to your Slack bot"
 echo ""
-echo "3. Approve the pairing code:"
-echo "   openclaw pairing approve slack <code>"
+echo "3. Approve the pairing code in Slack:"
+echo "   docker compose -f docker/docker-compose.yml exec openclaw openclaw pairing approve slack <code>"
 echo ""
-echo "4. Deploy an agent:"
+echo "4. Deploy an agent (optional):"
 echo "   bash scripts/deploy-agent.sh /path/to/agent-repo"
 echo ""
 echo "View logs:"
-echo "  cd docker && docker compose logs -f"
+echo "  cd docker && docker compose logs -f openclaw"
 echo ""
 echo "======================================"
