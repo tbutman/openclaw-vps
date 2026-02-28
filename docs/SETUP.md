@@ -30,6 +30,7 @@ Before you begin, ensure you have:
 - [ ] Slack App-Level Token (`xapp-...`) — See Phase 0 below
 - [ ] Slack Bot Token (`xoxb-...`) — See Phase 0 below
 - [ ] Tailscale auth key (`tskey-auth-...`) — Generate a reusable key from [login.tailscale.com/admin/settings/keys](https://login.tailscale.com/admin/settings/keys)
+- [ ] **Tailscale HTTPS/Serve enabled** — Enable at [login.tailscale.com/admin/settings/features](https://login.tailscale.com/admin/settings/features) (scroll to "HTTPS Certificates" and toggle ON)
 
 ---
 
@@ -278,7 +279,7 @@ Open this URL in your browser (make sure you're connected to Tailscale on your l
 - Tailscale identity-based authentication (no device pairing needed)
 - Access restricted to your Tailscale network only
 
-**First-time setup:** If you haven't used Tailscale Serve before, you'll need to enable it for your tailnet. OpenClaw will provide a URL in the logs - visit it and click to enable. Then restart the container:
+**Note:** If you see "Access denied: serve config denied" in the logs, you need to enable Tailscale HTTPS/Serve (should have been done in Prerequisites). Enable it at [login.tailscale.com/admin/settings/features](https://login.tailscale.com/admin/settings/features), then restart the container:
 
 ```bash
 docker compose -f docker/docker-compose.yml restart openclaw
@@ -376,6 +377,7 @@ See [ADDING-AGENTS.md](ADDING-AGENTS.md) for more details.
 
 ## Summary Checklist
 
+- [ ] Prerequisites: Tailscale HTTPS/Serve enabled for your tailnet
 - [ ] Phase 0: Slack App created and tokens saved
 - [ ] Phase 1: VPS provisioned and bootstrapped
 - [ ] Phase 2: OpenClaw installed and running (with Tailscale)
