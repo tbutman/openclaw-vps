@@ -77,7 +77,7 @@ sed -i 's/^#*PubkeyAuthentication .*/PubkeyAuthentication yes/' /etc/ssh/sshd_co
 sed -i 's/^#*ChallengeResponseAuthentication .*/ChallengeResponseAuthentication no/' /etc/ssh/sshd_config
 
 # Restart SSH to apply changes
-systemctl restart sshd
+systemctl restart ssh
 echo "SSH hardened: key-only auth, root login disabled."
 
 echo ""
