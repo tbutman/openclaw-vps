@@ -4,53 +4,36 @@
     "port": 18789,
     "bind": "lan",
     "controlUi": {
-      "enabled": true
+      "enabled": true,
+      "allowedOrigins": ["http://localhost:18789", "https://openclaw-vps.tailb1b4fb.ts.net"\]
     }
   },
-
   "channels": {
     "defaults": {
       "groupPolicy": "allowlist"
     },
     "slack": {
       "enabled": true,
-      "botToken": "${SLACK_BOT_TOKEN}",
-      "appToken": "${SLACK_APP_TOKEN}",
-      "dmPolicy": "pairing",
-      "allowFrom": ["*"],
-      "dm": {
-        "enabled": true
-      },
-      "channels": {},
-      "historyLimit": 50,
-      "allowBots": false
+      "mode": "socket",
+      "dmPolicy": "pairing"
     }
   },
-
   "agents": {
     "defaults": {
-      "workspace": "~/.openclaw/workspace",
+      "workspace": "/home/openclaw/workspace",
       "model": {
         "primary": "anthropic/claude-sonnet-4-5"
       }
-    },
-    "list": []
+    }
   },
-
   "browser": {
     "enabled": true,
     "headless": true,
     "cdpUrl": "http://chromium:3000"
   },
-
   "tools": {
     "exec": {
       "ask": "always"
     }
-  },
-
-  "session": {
-    "scope": "per-sender",
-    "store": "~/.openclaw/agents/default/sessions/sessions.json"
   }
 }
