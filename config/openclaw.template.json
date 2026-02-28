@@ -10,7 +10,8 @@
       "allowTailscale": true
     },
     "controlUi": {
-      "enabled": true
+      "enabled": true,
+      "allowedOrigins": ["https://*.ts.net"]
     }
   },
   "channels": {
