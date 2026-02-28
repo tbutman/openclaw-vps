@@ -5,6 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: openclaw-gateway
+    hostname: openclaw-gateway
     restart: unless-stopped
     volumes:
       # OpenClaw state directory (config, credentials, memory, conversations)
