@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(chmod +x /Users/tbutman/Documents/03_personal_projects/openclaw-vps/scripts/*.sh)"
+      "Bash(chmod +x /Users/tbutman/Documents/03_personal_projects/openclaw-vps/scripts/*.sh)",
+      "Bash(git add docker/Dockerfile)",
+      "Bash(git commit -m \"Fix Dockerfile: handle existing UID 1000 gracefully\")",
+      "Bash(git push)"
     ],
     "deny": [],
     "ask": []

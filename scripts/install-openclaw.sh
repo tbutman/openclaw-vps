@@ -87,7 +87,11 @@ docker compose ps
 
 echo ""
 echo "[4/4] Configuring OpenClaw gateway..."
-# Copy config template to OpenClaw state directory
+# Always overwrite config with latest template
+if [ -f "$OPENCLAW_STATE_DIR/openclaw.json" ]; then
+  echo "Backing up existing config to $OPENCLAW_STATE_DIR/openclaw.json.backup"
+  cp "$OPENCLAW_STATE_DIR/openclaw.json" "$OPENCLAW_STATE_DIR/openclaw.json.backup"
+fi
 cp ../config/openclaw.template.json "$OPENCLAW_STATE_DIR/openclaw.json"
 echo "Config template copied to $OPENCLAW_STATE_DIR/openclaw.json"
 

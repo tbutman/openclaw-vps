@@ -14,10 +14,10 @@
 │  │  Docker                                │  │
 │  │  ┌──────────────────────────────────┐  │  │
 │  │  │  OpenClaw Gateway                │  │  │
-│  │  │  ws://127.0.0.1:18789           │  │  │
-│  │  │  ├─ Slack (Socket Mode)         │  │  │
-│  │  │  ├─ Agent routing               │  │  │
-│  │  │  └─ Skills + Tools              │  │  │
+│  │  │  ws://127.0.0.1:18789            │  │  │
+│  │  │  ├─ Slack (Socket Mode)          │  │  │
+│  │  │  ├─ Agent routing                │  │  │
+│  │  │  └─ Skills + Tools               │  │  │
 │  │  └──────────────────────────────────┘  │  │
 │  │  ┌──────────────────────────────────┐  │  │
 │  │  │  Chromium (browser automation)   │  │  │
@@ -25,16 +25,16 @@
 │  └────────────────────────────────────────┘  │
 │                                              │
 │  ┌────────────────────────────────────────┐  │
-│  │  Tailscale (private mesh VPN)         │  │
-│  │  ├─ Admin access (SSH, Control UI)    │  │
-│  │  └─ No public ports exposed           │  │
+│  │  Tailscale (private mesh VPN)          │  │
+│  │  ├─ Admin access (SSH, Control UI)     │  │
+│  │  └─ No public ports exposed            │  │
 │  └────────────────────────────────────────┘  │
 │                                              │
 │  ┌────────────────────────────────────────┐  │
-│  │  UFW Firewall                         │  │
-│  │  ├─ DENY all inbound (default)        │  │
-│  │  ├─ ALLOW Tailscale subnet            │  │
-│  │  └─ ALLOW SSH (rate-limited)          │  │
+│  │  UFW Firewall                          │  │
+│  │  ├─ DENY all inbound (default)         │  │
+│  │  ├─ ALLOW Tailscale subnet             │  │
+│  │  └─ ALLOW SSH (rate-limited)           │  │
 │  └────────────────────────────────────────┘  │
 │                                              │
 │  ┌────────────────────────────────────────┐  │
