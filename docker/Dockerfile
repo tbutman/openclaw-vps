@@ -55,4 +55,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 
 # Default command
 # Run gateway in foreground
-CMD ["openclaw", "gateway"]
+CMD ["openclaw", "gateway", "run"]

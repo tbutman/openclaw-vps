@@ -1,40 +1,56 @@
 {
   "gateway": {
-    "mode": "local"
+    "mode": "local",
+    "port": 18789,
+    "bind": "loopback",
+    "controlUi": {
+      "enabled": true
+    }
   },
-  "exec": {
-    "ask": "on"
-  },
+
   "channels": {
     "defaults": {
       "groupPolicy": "allowlist"
     },
     "slack": {
       "enabled": true,
-      "mode": "socket",
+      "botToken": "${SLACK_BOT_TOKEN}",
+      "appToken": "${SLACK_APP_TOKEN}",
       "dmPolicy": "pairing",
-      "allowedChannels": []
+      "allowFrom": ["*"],
+      "dm": {
+        "enabled": true
+      },
+      "channels": {},
+      "historyLimit": 50,
+      "allowBots": false
     }
   },
-  "agents": [],
-  "skills": {},
-  "memory": {
-    "enabled": true,
-    "provider": "local",
-    "path": "/home/openclaw/.openclaw/memory"
+
+  "agents": {
+    "defaults": {
+      "workspace": "~/.openclaw/workspace",
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-5"
+      }
+    },
+    "list": []
   },
+
   "browser": {
     "enabled": true,
     "headless": true,
-    "endpoint": "ws://chromium:3000"
+    "cdpUrl": "ws://chromium:3000"
   },
-  "security": {
-    "requirePairing": true,
-    "allowedUsers": [],
-    "rateLimit": {
-      "enabled": true,
-      "maxRequests": 30,
-      "windowMs": 60000
+
+  "tools": {
+    "exec": {
+      "ask": "on"
     }
+  },
+
+  "session": {
+    "scope": "per-sender",
+    "store": "~/.openclaw/agents/default/sessions/sessions.json"
   }
 }
