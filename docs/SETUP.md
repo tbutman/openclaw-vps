@@ -151,6 +151,12 @@ This script will:
 
 **This takes ~5 minutes.** Watch for any errors.
 
+**Interactive prompt:** During the unattended-upgrades installation, you'll see a dialog asking:
+```
+Automatically download and install stable updates?
+```
+Select **Yes** to enable automatic security updates.
+
 ### Step 5: Authenticate Tailscale
 
 After bootstrap completes:
