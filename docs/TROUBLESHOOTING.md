@@ -248,6 +248,46 @@ http://openclaw-vps:18789
 
 ---
 
+### Issue: Control UI shows "pairing required" or "device identity required"
+
+**Cause:** Gateway auth mode is not configured for Tailscale identity authentication.
+
+**Solution:**
+
+The config needs `trusted-proxy` mode to accept Tailscale identity headers:
+
+```bash
+nano ~/.openclaw/openclaw.json
+```
+
+Verify the `gateway.auth` section looks like this:
+
+```json
+"auth": {
+  "mode": "trusted-proxy",
+  "trustedProxy": {
+    "userHeader": "tailscale-user-login"
+  },
+  "allowTailscale": true
+}
+```
+
+And ensure `trustedProxies` is set:
+
+```json
+"trustedProxies": ["127.0.0.1", "::1"]
+```
+
+Then restart:
+
+```bash
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml restart openclaw
+```
+
+The Control UI should now load without device pairing when accessed via Tailscale Serve.
+
+---
+
 ## SSH Issues
 
 ### Issue: "Permission denied (publickey)" when SSH-ing
