@@ -250,7 +250,7 @@ This script will:
 
 **This takes ~3-5 minutes** (Docker image build + npm installs).
 
-**Note:** The script automatically configures the gateway with the template from `config/openclaw-config.template.json`. You can customize this later by editing `~/.openclaw/config.json`.
+**Note:** The script automatically configures the gateway with the template from `config/openclaw.template.json`. You can customize this later by editing `~/.openclaw/openclaw.json`.
 
 ### Step 5: Verify Installation
 

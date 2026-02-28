@@ -1,0 +1,40 @@
+{
+  "gateway": {
+    "mode": "local"
+  },
+  "exec": {
+    "ask": "on"
+  },
+  "channels": {
+    "defaults": {
+      "groupPolicy": "allowlist"
+    },
+    "slack": {
+      "enabled": true,
+      "mode": "socket",
+      "dmPolicy": "pairing",
+      "allowedChannels": []
+    }
+  },
+  "agents": [],
+  "skills": {},
+  "memory": {
+    "enabled": true,
+    "provider": "local",
+    "path": "/home/openclaw/.openclaw/memory"
+  },
+  "browser": {
+    "enabled": true,
+    "headless": true,
+    "endpoint": "ws://chromium:3000"
+  },
+  "security": {
+    "requirePairing": true,
+    "allowedUsers": [],
+    "rateLimit": {
+      "enabled": true,
+      "maxRequests": 30,
+      "windowMs": 60000
+    }
+  }
+}

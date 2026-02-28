@@ -88,8 +88,8 @@ docker compose ps
 echo ""
 echo "[4/5] Configuring OpenClaw gateway..."
 # Copy config template to OpenClaw state directory
-cp ../config/openclaw-config.template.json "$OPENCLAW_STATE_DIR/config.json"
-echo "Config template copied to $OPENCLAW_STATE_DIR/config.json"
+cp ../config/openclaw.template.json "$OPENCLAW_STATE_DIR/openclaw.json"
+echo "Config template copied to $OPENCLAW_STATE_DIR/openclaw.json"
 
 # Restart containers to pick up config
 docker compose restart openclaw
