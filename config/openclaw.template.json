@@ -12,7 +12,8 @@
     },
     "controlUi": {
       "enabled": true,
-      "allowedOrigins": ["https://openclaw-gateway.tailb1b4fb.ts.net"]
+      "allowedOrigins": ["https://openclaw-gateway.tailb1b4fb.ts.net"],
+      "dangerouslyDisableDeviceAuth": true
     }
   },
   "channels": {
