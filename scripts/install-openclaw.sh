@@ -109,9 +109,13 @@ else
   exit 1
 fi
 
-# Get Tailscale hostname from inside container
+# Verify Tailscale connection and get hostname
 echo ""
-echo "Retrieving Tailscale connection info..."
+echo "Verifying Tailscale connection..."
+docker compose exec -T openclaw tailscale status || echo "WARNING: Could not retrieve Tailscale status"
+
+echo ""
+echo "Retrieving Tailscale URL..."
 TAILSCALE_HOSTNAME=$(docker compose exec -T openclaw tailscale status --json 2>/dev/null | grep -o '"HostName":"[^"]*"' | cut -d'"' -f4 || echo "openclaw-gateway")
 TAILNET=$(docker compose exec -T openclaw tailscale status --json 2>/dev/null | grep -o '"MagicDNSSuffix":"[^"]*"' | cut -d'"' -f4 || echo "ts.net")
 
@@ -122,10 +126,11 @@ echo "======================================"
 echo ""
 echo "OpenClaw gateway is running with Tailscale Serve."
 echo ""
-echo "Access the Control UI via Tailscale (HTTPS):"
-echo "  https://${TAILSCALE_HOSTNAME}.${TAILNET}"
+echo "✅ Control UI URL (HTTPS, Tailscale-only):"
+echo "   https://${TAILSCALE_HOSTNAME}.${TAILNET}"
 echo ""
-echo "Tailscale identity authentication is enabled - no device pairing required!"
+echo "✅ Tailscale identity authentication enabled"
+echo "   No device pairing required when accessing from your Tailscale network!"
 echo ""
 echo "Next steps:"
 echo "1. Configure Slack connection:"
