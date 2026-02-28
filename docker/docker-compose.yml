@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # OpenClaw Gateway
+  openclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openclaw-gateway
+    restart: unless-stopped
+    ports:
+      # Gateway WebSocket port (only accessible via Tailscale, not exposed publicly)
+      - "127.0.0.1:18789:18789"
+    volumes:
+      # OpenClaw state directory (config, credentials, memory, conversations)
+      - ${OPENCLAW_STATE_DIR:-/home/openclaw/.openclaw}:/home/openclaw/.openclaw
+      # Agent workspace directory
+      - ${OPENCLAW_WORKSPACE_DIR:-/home/openclaw/workspace}:/home/openclaw/workspace
+    environment:
+      # LLM Provider
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+      # Slack credentials
+      - SLACK_APP_TOKEN=${SLACK_APP_TOKEN}
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+
+      # Node environment
+      - NODE_ENV=production
+
+      # OpenClaw configuration
+      - OPENCLAW_STATE_DIR=/home/openclaw/.openclaw
+      - OPENCLAW_WORKSPACE_DIR=/home/openclaw/workspace
+    networks:
+      - openclaw-network
+    depends_on:
+      - chromium
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Chromium (for browser automation)
+  chromium:
+    image: browserless/chrome:latest
+    container_name: openclaw-chromium
+    restart: unless-stopped
+    ports:
+      # Chromium debugging port (internal only)
+      - "127.0.0.1:3000:3000"
+    environment:
+      - MAX_CONCURRENT_SESSIONS=5
+      - CONNECTION_TIMEOUT=60000
+      - MAX_QUEUE_LENGTH=10
+      - ENABLE_DEBUGGER=false
+      - CHROME_REFRESH_TIME=86400000  # 24 hours
+    networks:
+      - openclaw-network
+    shm_size: '1gb'  # Increase shared memory for Chromium stability
+
+networks:
+  openclaw-network:
+    driver: bridge

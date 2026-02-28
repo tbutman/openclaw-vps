@@ -1,0 +1,48 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# OpenClaw state (if running locally)
+.openclaw/
+workspace/
+
+# Backups (may contain sensitive data)
+*.tar.gz
+*.tar.gz.enc
+backups/
+
+# SSH keys
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# Logs
+*.log
+logs/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Editor directories
+.vscode/
+.idea/
+*.sublime-*
+
+# Docker volumes (if running locally)
+docker/volumes/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Node modules (if any local tooling uses npm)
+node_modules/
+package-lock.json
+yarn.lock
