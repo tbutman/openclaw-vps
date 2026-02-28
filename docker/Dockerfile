@@ -28,9 +28,7 @@ RUN apt-get update && apt-get install -y \
 RUN node --version && npm --version
 
 # Install OpenClaw globally
-# Replace with actual installation method once OpenClaw is available on npm
-# For now, this is a placeholder
-RUN npm install -g openclaw || echo "OpenClaw installation placeholder"
+RUN npm install -g openclaw
 
 # Create non-root user
 # If UID 1000 exists, delete it first, then create openclaw user
