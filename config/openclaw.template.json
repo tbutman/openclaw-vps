@@ -11,7 +11,8 @@
     },
     "controlUi": {
       "enabled": true,
-      "allowedOrigins": ["https://openclaw-gateway.tailb1b4fb.ts.net"]
+      "trustedProxies": ["127.0.0.1", "::1"],
+      "allowedOrigins": ["https://*.ts.net"]
     }
   },
   "channels": {
