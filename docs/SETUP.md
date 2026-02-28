@@ -299,6 +299,8 @@ Replace `<your-tailnet>` with your actual Tailnet name (shown in Tailscale admin
 
 **Security note:** The gateway binds to `localhost` only. Tailscale Serve proxies HTTPS traffic from your tailnet to `localhost:18789`, keeping the gateway unexposed to the public internet.
 
+**First-time setup:** If you haven't used Tailscale Serve before, you'll need to enable it for your tailnet. The command will provide a URL - visit it and click to enable, then re-run the command.
+
 ---
 
 ## Phase 3: Configure Slack
