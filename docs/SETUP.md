@@ -380,37 +380,54 @@ The install script automatically sets up:
 
 ### Tools Command (Recommended)
 
-The `tools` command provides a convenient interface for all operations:
+The `tools` command provides a convenient interface for all operations.
 
+**Slack Management:**
+- `tools slack channel list/add/remove` - Manage allowed channels
+- `tools slack user list/add/remove` - Manage paired users
+- `tools slack pairing list/approve` - Handle pairing requests
+
+**Tailscale Management:**
+- `tools tailscale status/url` - Check connection and get Control UI URL
+- `tools tailscale list users` - List allowed users
+- `tools tailscale add/remove user` - Manage user access
+
+**Configuration:**
+- `tools config view` - Show current config
+- `tools config sync` - Merge template changes (preserves customizations!)
+
+**Docker Operations:**
+- `tools docker ps/logs/restart/rebuild/status` - Container management
+- `tools openclaw logs/restart/shell/status` - OpenClaw container operations
+
+**System & Maintenance:**
+- `tools status/health` - System overview and health checks
+- `tools backup/restore/update/security` - Maintenance operations
+
+**Get full help:**
 ```bash
-# Quick status overview
+tools --help
+```
+
+**Examples:**
+```bash
+# Check system status
 tools status
 
-# OpenClaw operations
-tools openclaw status
-tools openclaw pairing approve slack <code>
+# Approve Slack pairing
+tools slack pairing approve ABC123
+
+# Add a Slack channel
+tools slack channel add C12345678
+
+# View OpenClaw logs
 tools openclaw logs
-tools openclaw restart
-tools openclaw shell
 
-# Docker management
-tools docker ps
-tools docker logs openclaw
-tools docker restart
-tools docker rebuild
+# Sync config from template
+tools config sync
 
-# Tailscale
-tools tailscale status
-tools tailscale url
-
-# Maintenance
+# Create backup
 tools backup
-tools restore <file>
-tools security
-tools fix-permissions
-
-# Help
-tools --help
 ```
 
 ### OpenClaw CLI Commands (Direct)
