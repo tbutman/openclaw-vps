@@ -380,7 +380,7 @@ The install script automatically sets up:
 
 ### Tools Command (Recommended)
 
-The `tools` command provides a convenient interface for all operations.
+The `tools` command provides a convenient interface for many operations.
 
 **Slack Management:**
 - `tools slack channel list/add/remove` - Manage allowed channels
@@ -394,6 +394,7 @@ The `tools` command provides a convenient interface for all operations.
 
 **Configuration:**
 - `tools config view` - Show current config
+- `tools config edit` - Edit config in nano
 - `tools config sync` - Merge template changes (preserves customizations!)
 
 **Docker Operations:**

@@ -157,8 +157,11 @@ Commands:
     config view             Show current OpenClaw config
                             → cat ~/.openclaw/openclaw.json
 
+    config edit             Edit config in nano
+                            → nano ~/.openclaw/openclaw.json
+
     config sync             Sync config from latest template (backs up current config)
-                            → Copies ~/openclaw-vps/config/openclaw.template.json to ~/.openclaw/openclaw.json
+                            → Merges template with current config using jq
 
   System Info:
     status                  Show overall system status (containers, Tailscale, disk, memory)
@@ -811,13 +814,18 @@ main() {
             shift
             if [ $# -eq 0 ]; then
                 print_error "Missing config command"
-                echo "Usage: tools config <view|sync>"
+                echo "Usage: tools config <view|edit|sync>"
                 exit 1
             fi
 
             case "$1" in
                 view)
                     cat "$HOME/.openclaw/openclaw.json"
+                    ;;
+                edit)
+                    print_info "Opening config in nano..."
+                    print_warning "Remember to restart the openclaw container after making changes: tools openclaw restart"
+                    nano "$HOME/.openclaw/openclaw.json"
                     ;;
                 sync)
                     # Check if jq is installed
@@ -860,7 +868,7 @@ main() {
                     ;;
                 *)
                     print_error "Unknown config command: $1"
-                    echo "Available: view, sync"
+                    echo "Available: view, edit, sync"
                     exit 1
                     ;;
             esac
