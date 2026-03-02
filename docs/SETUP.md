@@ -94,6 +94,13 @@ Before you begin, ensure you have:
    - `app_mention`
 4. Click **Save Changes**
 
+### Step 6: Enable Messages Tab
+
+1. In the sidebar, click **App Home**
+2. Scroll down to the **Messages Tab** section
+3. Check the box: **"Allow users to send Slash commands and messages from the messages tab"**
+4. (Optional) Customize the **Display Name** and **Default Username** for your bot
+
 **You're done!** Keep your `SLACK_APP_TOKEN` and `SLACK_BOT_TOKEN` handy for Phase 2.
 
 ---

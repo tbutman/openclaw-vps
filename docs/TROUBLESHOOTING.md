@@ -106,6 +106,33 @@ bash scripts/install-openclaw.sh
 
 ## Slack Issues
 
+### Issue: Pairing approval doesn't persist / Bot keeps asking for pairing code
+
+**Cause:** Permission mismatch in the OpenClaw state directory. Some credential files are owned by root instead of the openclaw user.
+
+**Solution:**
+
+Fix file ownership:
+```bash
+cd ~/.openclaw/credentials
+sudo chown -R openclaw:openclaw ~/.openclaw/
+sudo chmod 600 ~/.openclaw/credentials/*
+```
+
+Restart the gateway:
+```bash
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml restart openclaw
+```
+
+**Permanent fix:** Rebuild the Docker image to include the entrypoint permission fix:
+```bash
+cd ~/openclaw-vps/docker
+docker compose build --no-cache openclaw
+docker compose restart openclaw
+```
+
+---
+
 ### Issue: Slack bot doesn't respond to messages
 
 **Possible causes:**
@@ -134,6 +161,23 @@ bash scripts/install-openclaw.sh
      ```bash
      docker compose logs openclaw | grep -i slack
      ```
+
+---
+
+### Issue: "Sending messages to this app has been turned off" in Slack DM
+
+**Cause:** The Messages Tab is not enabled in the Slack app's App Home settings.
+
+**Solution:**
+
+1. Go to https://api.slack.com/apps → Your app
+2. Click **"App Home"** in the left sidebar
+3. Scroll to the **"Messages Tab"** section
+4. Check the box: **"Allow users to send Slash commands and messages from the messages tab"**
+5. If prompted, reinstall the app to Workspace
+6. Refresh the Slack DM window or close/reopen it
+
+The bot should now accept messages.
 
 ---
 

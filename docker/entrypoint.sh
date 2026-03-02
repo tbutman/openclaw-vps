@@ -21,6 +21,10 @@ fi
 # Show Tailscale status
 tailscale status || true
 
+# Fix ownership of state directory to ensure openclaw user can write credentials
+echo "Fixing permissions for OpenClaw state directory..."
+chown -R openclaw:openclaw /home/openclaw/.openclaw /home/openclaw/workspace 2>/dev/null || true
+
 # Drop to openclaw user and run gateway
 echo "Starting OpenClaw gateway as openclaw user..."
 exec gosu openclaw "$@"
