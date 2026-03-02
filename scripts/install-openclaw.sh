@@ -95,6 +95,19 @@ fi
 cp ../config/openclaw.template.json "$OPENCLAW_STATE_DIR/openclaw.json"
 echo "Config template copied to $OPENCLAW_STATE_DIR/openclaw.json"
 
+# Generate secure auth token for browser control endpoints
+echo "Generating browser control auth token..."
+AUTH_TOKEN=$(openssl rand -hex 32)
+# Use sed to inject token into gateway.auth section (after mode line)
+sed -i.tmp '/"mode": "trusted-proxy"/a\
+    "token": "'"$AUTH_TOKEN"'",' "$OPENCLAW_STATE_DIR/openclaw.json"
+rm -f "$OPENCLAW_STATE_DIR/openclaw.json.tmp"
+echo "Browser control auth token generated and added to config"
+
+# Fix state directory permissions
+echo "Securing state directory permissions..."
+chmod 700 "$OPENCLAW_STATE_DIR"
+
 # Restart containers to pick up config
 docker compose restart openclaw
 sleep 3
@@ -124,6 +137,30 @@ TAILSCALE_HOSTNAME=$(docker compose exec -T openclaw tailscale status --json 2>/
 TAILNET=$(docker compose exec -T openclaw tailscale status --json 2>/dev/null | grep -o '"MagicDNSSuffix":"[^"]*"' | cut -d'"' -f4 || echo "ts.net")
 
 echo ""
+echo "Setting up OpenClaw CLI tools..."
+
+# Install tools command-line tool
+if [ ! -f /usr/local/bin/tools ]; then
+  echo "Installing 'tools' CLI command..."
+  sudo cp ~/openclaw-vps/scripts/openclaw-tools.sh /usr/local/bin/tools
+  sudo chmod +x /usr/local/bin/tools
+  echo "✅ 'tools' command installed to /usr/local/bin/tools"
+else
+  echo "✅ 'tools' command already installed"
+fi
+
+# Add openclaw alias to .bashrc if not already present
+if ! grep -q "alias openclaw=" ~/.bashrc 2>/dev/null; then
+  echo 'alias openclaw="docker compose -f ~/openclaw-vps/docker/docker-compose.yml exec openclaw openclaw"' >> ~/.bashrc
+  echo "✅ OpenClaw CLI alias added to ~/.bashrc"
+else
+  echo "✅ OpenClaw CLI alias already exists"
+fi
+
+# Also add to current session
+alias openclaw="docker compose -f ~/openclaw-vps/docker/docker-compose.yml exec openclaw openclaw"
+
+echo ""
 echo "======================================"
 echo "Installation Complete!"
 echo "======================================"
@@ -136,6 +173,10 @@ echo ""
 echo "✅ Tailscale identity authentication enabled"
 echo "   No device pairing required when accessing from your Tailscale network!"
 echo ""
+echo "✅ OpenClaw CLI tools installed"
+echo "   Run 'tools --help' to see all available commands"
+echo "   Run 'openclaw status' for direct OpenClaw CLI access"
+echo ""
 echo "Next steps:"
 echo "1. Configure Slack connection:"
 echo "   bash scripts/configure-slack.sh"
@@ -143,10 +184,19 @@ echo ""
 echo "2. Send a test DM to your Slack bot"
 echo ""
 echo "3. Approve the pairing code in Slack:"
-echo "   docker compose -f docker/docker-compose.yml exec openclaw openclaw pairing approve slack <code>"
+echo "   tools openclaw pairing approve slack <code>"
 echo ""
 echo "4. Deploy an agent (optional):"
 echo "   bash scripts/deploy-agent.sh /path/to/agent-repo"
+echo ""
+echo "Useful commands:"
+echo "  tools status                 # Check overall system status"
+echo "  tools openclaw status        # Check OpenClaw gateway"
+echo "  tools openclaw logs          # View OpenClaw logs"
+echo "  tools docker ps              # List containers"
+echo "  tools tailscale status       # Check Tailscale"
+echo "  tools backup                 # Create backup"
+echo "  tools --help                 # Show all commands"
 echo ""
 echo "View logs:"
 echo "  cd docker && docker compose logs -f openclaw"

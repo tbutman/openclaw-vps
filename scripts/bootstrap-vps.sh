@@ -40,9 +40,10 @@ OPENCLAW_USER="openclaw"
 OPENCLAW_HOME="/home/$OPENCLAW_USER"
 SWAP_SIZE="4G"
 
-echo "[1/10] Updating system packages..."
+echo "[1/10] Updating system packages and installing utilities..."
 apt-get update
 apt-get upgrade -y
+apt-get install -y jq curl git
 
 echo ""
 echo "[2/10] Creating non-root user: $OPENCLAW_USER..."

@@ -372,6 +372,127 @@ See [ADDING-AGENTS.md](ADDING-AGENTS.md) for more details.
 
 ---
 
+## Common Commands Reference
+
+The install script automatically sets up:
+- **`tools`** command: Wrapper for all OpenClaw VPS operations
+- **`openclaw`** alias: Direct access to OpenClaw CLI
+
+### Tools Command (Recommended)
+
+The `tools` command provides a convenient interface for all operations:
+
+```bash
+# Quick status overview
+tools status
+
+# OpenClaw operations
+tools openclaw status
+tools openclaw pairing approve slack <code>
+tools openclaw logs
+tools openclaw restart
+tools openclaw shell
+
+# Docker management
+tools docker ps
+tools docker logs openclaw
+tools docker restart
+tools docker rebuild
+
+# Tailscale
+tools tailscale status
+tools tailscale url
+
+# Maintenance
+tools backup
+tools restore <file>
+tools security
+tools fix-permissions
+
+# Help
+tools --help
+```
+
+### OpenClaw CLI Commands (Direct)
+
+```bash
+# Check gateway status
+openclaw status
+
+# List pending pairings
+openclaw pairing list
+
+# Approve a pairing request
+openclaw pairing approve slack <code>
+
+# Run security audit
+openclaw security audit
+
+# Run deep security audit
+openclaw security audit --deep
+```
+
+### Docker Management
+
+```bash
+# Check container status
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml ps
+
+# View logs (all containers)
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml logs -f
+
+# View logs (OpenClaw only)
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml logs -f openclaw
+
+# View logs (Chromium only)
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml logs -f chromium
+
+# Restart containers
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml restart
+
+# Restart OpenClaw only
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml restart openclaw
+
+# Stop all containers
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml down
+
+# Start all containers
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml up -d
+
+# Rebuild and restart
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml build --no-cache
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml up -d
+```
+
+### Container Shell Access
+
+```bash
+# Access OpenClaw container shell
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml exec openclaw bash
+
+# Check Tailscale status inside container
+docker compose -f ~/openclaw-vps/docker/docker-compose.yml exec openclaw tailscale status
+
+# View OpenClaw config
+cat ~/.openclaw/openclaw.json
+```
+
+### Maintenance
+
+```bash
+# Backup OpenClaw state
+bash ~/openclaw-vps/scripts/backup.sh
+
+# Restore from backup
+bash ~/openclaw-vps/scripts/restore.sh /path/to/backup.tar.gz.enc
+
+# Fix state directory permissions (if pairing doesn't persist)
+chmod 700 ~/.openclaw
+sudo chown -R openclaw:openclaw ~/.openclaw
+```
+
+---
+
 ## What's Next?
 
 - **Monitor logs:** `cd docker && docker compose logs -f`

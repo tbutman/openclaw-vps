@@ -25,7 +25,14 @@
     },
     "slack": {
       "enabled": true,
-      "dmPolicy": "pairing"
+      "dmPolicy": "pairing",
+      "allowFrom": ["#general", "CJNFPQV99"],
+      "channels": {
+        "#general": {
+          "allow": true,
+          "requireMention": true
+        }
+      }
     }
   },
   "agents": {
